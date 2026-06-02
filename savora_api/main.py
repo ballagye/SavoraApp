@@ -18,6 +18,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",   # SvelteKit dev
+        "http://localhost:5174",   # SvelteKit dev (port alternatif)
         "http://localhost:4173",   # SvelteKit preview
     ],
     allow_credentials=True,

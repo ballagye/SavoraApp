@@ -9,7 +9,9 @@ from schemas import AvailabilityOut, QuotaOut, QuotaSet
 
 router = APIRouter(tags=["Quota & Disponibilité"])
 
-DEFAULT_MAX_COVERS = 30
+# ── Capacité du restaurant ─────────────────────────────────────────────────────
+# Modifier cette valeur pour changer la capacité max par service (midi / soir)
+DEFAULT_MAX_COVERS = 15
 
 
 def _reserved(db: Session, d: date, period: MealPeriod) -> int:
