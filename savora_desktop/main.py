@@ -14,6 +14,10 @@ from api_client import APIError
 from components.reservation_list import ReservationList
 from components.reservation_detail import ReservationDetail
 from components.quota_panel import QuotaPanel
+from components.new_reservation_dialog import NewReservationDialog
+from components.clients_list import ClientsList
+from components.client_detail import ClientDetail
+from components.new_client_dialog import NewClientDialog
 from config import ACCENT, JOURS_FR, MOIS_FR, MAX_COVERS, REFRESH_MS
 
 ctk.set_appearance_mode("dark")
@@ -29,9 +33,10 @@ class SavoraApp(ctk.CTk):
 
         self._after_id = None
         self._current_date = date.today()
-        self._showing_all   = False                  # True = pas de filtre de date
-        self._service_filter: Optional[str] = None   # None=tous / "lunch" / "dinner"
-        self._status_filter:  Optional[str] = None   # None=tous / "pending" / ...
+        self._showing_all   = False
+        self._service_filter: Optional[str] = None
+        self._status_filter:  Optional[str] = None
+        self._active_view = "reservations"          # "reservations" | "clients"
 
         self._build()
         self._load()
@@ -104,6 +109,52 @@ class SavoraApp(ctk.CTk):
             btn.pack(side="left", padx=2, pady=13)
             self._svc_btns[label] = btn
 
+        ctk.CTkFrame(header, width=1, fg_color="#333333").pack(
+            side="left", fill="y", pady=12, padx=6
+        )
+
+        # ── Switcher de vues : Réservations / Clients ─────────────────────────
+        self._view_btns = {}
+        for label, view in [("📋  Réservations", "reservations"),
+                             ("👥  Clients",       "clients")]:
+            btn = ctk.CTkButton(
+                header, text=label, width=130, height=30,
+                fg_color=ACCENT if view == "reservations" else "#2A2A2E",
+                text_color="#18181B" if view == "reservations" else "#AAAAAA",
+                hover_color="#B8852A" if view == "reservations" else "#3A3A3E",
+                corner_radius=6, font=ctk.CTkFont(size=11, weight="bold"),
+                command=lambda v=view: self._switch_view(v),
+            )
+            btn.pack(side="left", padx=2, pady=13)
+            self._view_btns[view] = btn
+
+        ctk.CTkFrame(header, width=1, fg_color="#333333").pack(
+            side="left", fill="y", pady=12, padx=6
+        )
+
+        # Bouton Nouvelle réservation (visible en vue Réservations)
+        self._btn_new_resa = ctk.CTkButton(
+            header, text="＋  Nouvelle réservation", height=30,
+            fg_color="#2A2A2E", hover_color="#3A3A3E", corner_radius=6,
+            font=ctk.CTkFont(size=11, weight="bold"),
+            command=self._new_reservation,
+        )
+        self._btn_new_resa.pack(side="left", padx=(4, 0), pady=13)
+
+        # Boutons vue Clients (masqués par défaut)
+        self._btn_new_client = ctk.CTkButton(
+            header, text="＋  Nouveau client", height=30,
+            fg_color="#2A2A2E", hover_color="#3A3A3E", corner_radius=6,
+            font=ctk.CTkFont(size=11, weight="bold"),
+            command=self._new_client,
+        )
+        self._btn_import = ctk.CTkButton(
+            header, text="⬇  Importer réservations", height=30,
+            fg_color="#2A2A2E", hover_color="#3A3A3E", corner_radius=6,
+            font=ctk.CTkFont(size=11, weight="bold"),
+            command=self._import_clients,
+        )
+
         # Refresh + compteur (à droite)
         self._count_lbl = ctk.CTkLabel(
             header, text="", text_color="#9CA3AF", font=ctk.CTkFont(size=12)
@@ -152,11 +203,29 @@ class SavoraApp(ctk.CTk):
         body = ctk.CTkFrame(self, fg_color="transparent")
         body.pack(fill="both", expand=True, padx=10, pady=(8, 4))
 
-        self._list_panel = ReservationList(body, on_select=self._on_select, width=760)
+        # ── Vue Réservations ──────────────────────────────────────────────────
+        self._resas_frame = ctk.CTkFrame(body, fg_color="transparent")
+        self._resas_frame.pack(fill="both", expand=True)
+
+        self._list_panel = ReservationList(
+            self._resas_frame, on_select=self._on_select, width=760)
         self._list_panel.pack(side="left", fill="both", expand=True, padx=(0, 5))
 
-        self._detail_panel = ReservationDetail(body, on_refresh=self._load, width=540)
+        self._detail_panel = ReservationDetail(
+            self._resas_frame, on_refresh=self._load, width=540)
         self._detail_panel.pack(side="right", fill="both", padx=(5, 0))
+
+        # ── Vue Clients ───────────────────────────────────────────────────────
+        self._clients_frame = ctk.CTkFrame(body, fg_color="transparent")
+        # (pas packée — affichée uniquement quand on clique sur "Clients")
+
+        self._clients_list = ClientsList(
+            self._clients_frame, on_select=self._on_client_select, width=760)
+        self._clients_list.pack(side="left", fill="both", expand=True, padx=(0, 5))
+
+        self._client_detail = ClientDetail(
+            self._clients_frame, on_refresh=self._load_clients, width=540)
+        self._client_detail.pack(side="right", fill="both", padx=(5, 0))
 
         # Date initiale
         self._list_panel.set_date_filter(self._current_date.isoformat())
@@ -166,6 +235,70 @@ class SavoraApp(ctk.CTk):
     def _fmt_date(self) -> str:
         d = self._current_date
         return f"{JOURS_FR[d.weekday()]}. {d.day} {MOIS_FR[d.month - 1]}"
+
+    # ── Switcher de vues ──────────────────────────────────────────────────────
+
+    def _switch_view(self, view: str):
+        self._active_view = view
+        for v, btn in self._view_btns.items():
+            if v == view:
+                btn.configure(fg_color=ACCENT, text_color="#18181B",
+                               hover_color="#B8852A")
+            else:
+                btn.configure(fg_color="#2A2A2E", text_color="#AAAAAA",
+                               hover_color="#3A3A3E")
+
+        if view == "reservations":
+            self._clients_frame.pack_forget()
+            self._btn_new_client.pack_forget()
+            self._btn_import.pack_forget()
+            self._resas_frame.pack(fill="both", expand=True)
+            self._btn_new_resa.pack(side="left", padx=(4, 0), pady=13)
+            self._load()
+        else:
+            self._resas_frame.pack_forget()
+            self._btn_new_resa.pack_forget()
+            self._clients_frame.pack(fill="both", expand=True)
+            self._btn_new_client.pack(side="left", padx=(4, 2), pady=13)
+            self._btn_import.pack(side="left", padx=(0, 4), pady=13)
+            self._load_clients()
+
+    def _load_clients(self):
+        def fetch():
+            try:
+                data = api_client.get_clients()
+                self.after(0, lambda: self._clients_list.load(data))
+                self.after(0, lambda: self._count_lbl.configure(
+                    text=f"{len(data)} client{'s' if len(data) != 1 else ''}",
+                    text_color="#10B981"))
+            except Exception as exc:
+                msg = exc.detail if isinstance(exc, APIError) else str(exc)
+                self.after(0, lambda: self._count_lbl.configure(
+                    text=f"Erreur : {msg}", text_color="#EF4444"))
+        threading.Thread(target=fetch, daemon=True).start()
+
+    def _on_client_select(self, client: dict):
+        self._client_detail.load(client)
+
+    def _new_client(self):
+        NewClientDialog(self, on_created=self._load_clients)
+
+    def _import_clients(self):
+        """Crée les fiches clients pour tous les emails de réservations."""
+        try:
+            result = api_client.import_clients_from_reservations()
+            n = result.get("imported", 0)
+            self._count_lbl.configure(
+                text=f"{n} client{'s' if n != 1 else ''} importé{'s' if n != 1 else ''}",
+                text_color="#10B981")
+            self._load_clients()
+        except Exception as exc:
+            msg = exc.detail if isinstance(exc, APIError) else str(exc)
+            self._count_lbl.configure(text=f"Erreur : {msg}", text_color="#EF4444")
+
+    def _new_reservation(self):
+        """Ouvre le dialogue de création d'une réservation."""
+        NewReservationDialog(self, on_created=self._load)
 
     def _show_all_dates(self):
         """Désactive le filtre de date → toutes les réservations."""

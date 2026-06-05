@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel, EmailStr, field_validator
 from models import Civility, MealPeriod, ReservationStatus
 
@@ -111,6 +111,40 @@ class QuotaOut(BaseModel):
     reserved_covers: int
     available_covers: int
     is_full: bool
+
+    model_config = {"from_attributes": True}
+
+
+# ── Client ─────────────────────────────────────────────────────────────────────
+
+class ClientCreate(BaseModel):
+    civility:   Civility
+    first_name: str
+    last_name:  str
+    phone:      str
+    email:      EmailStr
+    notes:      Optional[str] = None
+
+
+class ClientUpdate(BaseModel):
+    civility:   Optional[Civility]  = None
+    first_name: Optional[str]       = None
+    last_name:  Optional[str]       = None
+    phone:      Optional[str]       = None
+    email:      Optional[EmailStr]  = None
+    notes:      Optional[str]       = None
+
+
+class ClientOut(BaseModel):
+    id:                int
+    created_at:        datetime
+    civility:          Civility
+    first_name:        str
+    last_name:         str
+    phone:             str
+    email:             str
+    notes:             Optional[str]
+    reservation_count: int = 0
 
     model_config = {"from_attributes": True}
 

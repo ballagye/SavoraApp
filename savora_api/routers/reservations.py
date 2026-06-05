@@ -4,7 +4,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import DailyQuota, MealPeriod, Reservation, ReservationStatus
+from models import Client, DailyQuota, MealPeriod, Reservation, ReservationStatus
 from schemas import ReservationCreate, ReservationOut, ReservationUpdate, StatusUpdate
 
 router = APIRouter(prefix="/reservations", tags=["Réservations"])
@@ -51,8 +51,21 @@ def _check_quota(db: Session, date, meal_period: MealPeriod, party_size: int,
 @router.post("/", response_model=ReservationOut, status_code=status.HTTP_201_CREATED)
 def create_reservation(payload: ReservationCreate, db: Session = Depends(get_db)):
     _check_quota(db, payload.date, payload.meal_period, payload.party_size)
+
+    # Crée la réservation
     reservation = Reservation(**payload.model_dump())
     db.add(reservation)
+
+    # Auto-crée le client si inexistant (lien par email)
+    if not db.query(Client).filter(Client.email == payload.email).first():
+        db.add(Client(
+            civility=payload.civility,
+            first_name=payload.first_name,
+            last_name=payload.last_name,
+            phone=payload.phone,
+            email=payload.email,
+        ))
+
     db.commit()
     db.refresh(reservation)
     return reservation

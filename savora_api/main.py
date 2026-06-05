@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from database import Base, engine
-from routers import quota, reservations
+from routers import quota, reservations, clients
 
 # Création automatique des tables au démarrage
 Base.metadata.create_all(bind=engine)
@@ -28,6 +28,7 @@ app.add_middleware(
 
 app.include_router(reservations.router)
 app.include_router(quota.router)
+app.include_router(clients.router)
 
 
 @app.get("/", tags=["Santé"])
