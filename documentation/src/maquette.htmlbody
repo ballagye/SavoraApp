@@ -1,0 +1,217 @@
+<div class="cover">
+  <h1>Maquette de l'application</h1>
+  <h2>Client lourd — <strong>Savora</strong></h2>
+  <hr>
+  <p><strong>BTS SIO – option SLAM – Session 2026</strong><br>
+  Épreuve E6 — Conception et développement d'applications</p>
+  <p><strong>Candidat :</strong> Balla Gueye — <strong>N° :</strong> 02149092520<br>
+  <strong>Période :</strong> Janvier – Mars 2026 · <strong>Lieu :</strong> Paris</p>
+</div>
+
+<style>
+.mq { background:#0f0f12; border:1px solid #2a2a30; border-radius:10px; overflow:hidden;
+      font-family:'Segoe UI',Arial,sans-serif; color:#e5e7eb; margin:14px 0 28px; }
+.mq * { box-sizing:border-box; }
+.mq-header { display:flex; align-items:center; gap:8px; background:#18181b; padding:10px 14px;
+             border-bottom:1px solid #2a2a30; flex-wrap:wrap; }
+.mq-logo { color:#C9963A; font-weight:800; font-size:18px; letter-spacing:1px; }
+.mq-sep { width:1px; height:24px; background:#333; }
+.mq-btn { background:#2a2a2e; color:#aaa; border-radius:6px; padding:6px 10px; font-size:11px;
+          font-weight:700; }
+.mq-btn.gold { background:#C9963A; color:#18181b; }
+.mq-date { font-weight:700; font-size:13px; padding:0 6px; }
+.mq-grow { flex:1; }
+.mq-tabs { display:flex; gap:6px; background:#111113; padding:7px 14px; border-bottom:1px solid #2a2a30; }
+.mq-tab { background:#1f1f24; border-radius:5px; padding:4px 12px; font-size:11px; font-weight:700; }
+.mq-tab.amber { color:#F59E0B; } .mq-tab.green { color:#10B981; }
+.mq-tab.red { color:#EF4444; } .mq-tab.gray { color:#6B7280; }
+.mq-body { display:flex; gap:8px; padding:10px; min-height:300px; }
+.mq-left { flex:1.4; } .mq-right { flex:1; background:#1a1a1f; border-radius:8px; padding:12px; }
+.mq-search { background:#1e1e22; border-radius:8px; padding:8px 12px; font-size:12px; color:#666;
+             margin-bottom:10px; }
+.mq-slot { background:#212127; border-radius:4px; padding:5px 12px; font-size:12px; font-weight:700;
+           display:flex; gap:14px; margin:10px 0 4px; }
+.mq-slot .muted { color:#777788; font-weight:500; }
+.mq-slot .gold { color:#C9963A; }
+.mq-row { display:flex; align-items:center; background:#1e1e25; border-left:3px solid #10B981;
+          padding:6px 10px; margin:3px 0; border-radius:0 4px 4px 0; }
+.mq-row.amber { border-left-color:#F59E0B; }
+.mq-row .ico { width:22px; font-weight:700; }
+.mq-row.amber .ico { color:#F59E0B; } .mq-row .ico { color:#10B981; }
+.mq-row .nm { font-weight:700; font-size:12px; }
+.mq-row .ph { color:#8888AA; font-size:10px; }
+.mq-row .px { margin-left:auto; color:#aaa; font-weight:700; font-size:12px; }
+.mq-badge { display:inline-block; background:#F59E0B; color:#18181b; border-radius:13px;
+            padding:4px 14px; font-size:11px; font-weight:700; float:right; }
+.mq-h { font-size:16px; font-weight:800; }
+.mq-label { color:#555566; font-size:10px; font-weight:700; text-transform:uppercase;
+            margin:12px 0 4px; }
+.mq-actions { display:flex; gap:6px; }
+.mq-act { flex:1; text-align:center; border-radius:8px; padding:10px; font-size:12px; font-weight:700; }
+.mq-act.green { background:#10B981; color:#fff; } .mq-act.red { background:#EF4444; color:#fff; }
+.mq-card { background:#212127; border-radius:8px; padding:8px 12px; font-size:11px; }
+.mq-card div { padding:2px 0; } .mq-card .k { color:#888899; }
+.mq-quota { background:#18181b; border-top:1px solid #2a2a30; padding:8px 14px; font-size:11px;
+            display:flex; align-items:center; gap:10px; }
+.mq-caption { font-size:12px; color:#555; font-style:italic; margin:-18px 0 26px; }
+</style>
+
+<h1>1. Écran principal — Gestion des réservations</h1>
+
+<div class="mq">
+  <div class="mq-header">
+    <span class="mq-logo">SAVORA</span>
+    <span class="mq-sep"></span>
+    <span class="mq-btn">TOUT</span>
+    <span class="mq-btn">‹</span>
+    <span class="mq-date">MAR. 27 JUIN</span>
+    <span class="mq-btn">›</span>
+    <span class="mq-sep"></span>
+    <span class="mq-btn gold">TOUS</span>
+    <span class="mq-btn">DÉJEUNER</span>
+    <span class="mq-btn">DÎNER</span>
+    <span class="mq-sep"></span>
+    <span class="mq-btn gold">📋 Réservations</span>
+    <span class="mq-btn">👥 Clients</span>
+    <span class="mq-grow"></span>
+    <span class="mq-btn">＋ Nouvelle réservation</span>
+  </div>
+  <div class="mq-tabs">
+    <span class="mq-tab">TOUS 8</span>
+    <span class="mq-tab amber">⏱ 3</span>
+    <span class="mq-tab green">✓ 4</span>
+    <span class="mq-tab red">✕ 1</span>
+    <span class="mq-tab gray">◷ 0</span>
+  </div>
+  <div class="mq-body">
+    <div class="mq-left">
+      <div class="mq-search">🔍 Rechercher un client…</div>
+      <div class="mq-slot"><span>12h00</span><span class="muted">📋 2</span><span class="gold">🍴 5 / 15</span></div>
+      <div class="mq-row"><span class="ico">✓</span><span><div class="nm">Marie DUPONT</div><div class="ph">06 12 34 56 78</div></span><span class="px">2 pax</span></div>
+      <div class="mq-row amber"><span class="ico">⏱</span><span><div class="nm">Paul MARTIN</div><div class="ph">06 98 76 54 32</div></span><span class="px">3 pax</span></div>
+      <div class="mq-slot"><span>19h30</span><span class="muted">📋 2</span><span class="gold">🍴 6 / 15</span></div>
+      <div class="mq-row"><span class="ico">✓</span><span><div class="nm">Julie BERNARD</div><div class="ph">07 11 22 33 44</div></span><span class="px">4 pax</span></div>
+      <div class="mq-row amber"><span class="ico">⏱</span><span><div class="nm">Lucas PETIT</div><div class="ph">06 55 44 33 22</div></span><span class="px">2 pax</span></div>
+    </div>
+    <div class="mq-right">
+      <span class="mq-badge">⏱ En attente</span>
+      <div class="mq-h">Réservation #42</div>
+      <div class="mq-label">Actions</div>
+      <div class="mq-actions">
+        <span class="mq-act green">✓ Confirmer</span>
+        <span class="mq-act red">✕ Refuser</span>
+      </div>
+      <div class="mq-label">Réservation</div>
+      <div class="mq-card">
+        <div><span class="k">Date :</span> 27/06/2026</div>
+        <div><span class="k">Service :</span> Soir</div>
+        <div><span class="k">Heure :</span> 19:30</div>
+        <div><span class="k">Couverts :</span> 2</div>
+      </div>
+      <div class="mq-label">Client</div>
+      <div class="mq-card">
+        <div><span class="k">Nom :</span> Lucas PETIT</div>
+        <div><span class="k">Téléphone :</span> 06 55 44 33 22</div>
+        <div><span class="k">Email :</span> lucas.petit@mail.fr</div>
+      </div>
+    </div>
+  </div>
+  <div class="mq-quota">
+    <span style="color:#C9963A;font-weight:700;">QUOTA — DÎNER</span>
+    <span>Max couverts :</span><span class="mq-btn">15</span>
+    <span class="mq-btn gold">Enregistrer</span>
+    <span class="mq-grow"></span>
+    <span style="color:#10B981;">8 résultats</span>
+  </div>
+</div>
+<p class="mq-caption">Figure 1 — Écran principal : navigation par date, filtres par service et
+statut, planning groupé par créneau, panneau de détail avec actions, barre de quota.</p>
+
+<div class="pagebreak"></div>
+
+<h1>2. Écran — Gestion des clients (CRUD)</h1>
+
+<div class="mq">
+  <div class="mq-header">
+    <span class="mq-logo">SAVORA</span>
+    <span class="mq-sep"></span>
+    <span class="mq-btn">📋 Réservations</span>
+    <span class="mq-btn gold">👥 Clients</span>
+    <span class="mq-grow"></span>
+    <span class="mq-btn">＋ Nouveau client</span>
+    <span class="mq-btn">⬇ Importer réservations</span>
+  </div>
+  <div class="mq-body">
+    <div class="mq-left">
+      <div class="mq-search">🔍 Rechercher un client…</div>
+      <div class="mq-row"><span class="ico" style="color:#C9963A;">MD</span><span><div class="nm">Marie DUPONT</div><div class="ph">marie.dupont@mail.fr</div></span><span class="px">3 résa</span></div>
+      <div class="mq-row"><span class="ico" style="color:#C9963A;">PM</span><span><div class="nm">Paul MARTIN</div><div class="ph">paul.martin@mail.fr</div></span><span class="px">1 résa</span></div>
+      <div class="mq-row"><span class="ico" style="color:#C9963A;">JB</span><span><div class="nm">Julie BERNARD</div><div class="ph">julie.bernard@mail.fr</div></span><span class="px">2 résa</span></div>
+    </div>
+    <div class="mq-right">
+      <div class="mq-h">Marie DUPONT</div>
+      <div class="mq-label">Coordonnées</div>
+      <div class="mq-card">
+        <div><span class="k">Civilité :</span> Madame</div>
+        <div><span class="k">Téléphone :</span> 06 12 34 56 78</div>
+        <div><span class="k">Email :</span> marie.dupont@mail.fr</div>
+      </div>
+      <div class="mq-label">Historique des réservations</div>
+      <div class="mq-card">
+        <div>27/06/2026 — Soir — 2 pax — ✓</div>
+        <div>14/05/2026 — Midi — 4 pax — ✓</div>
+        <div>02/03/2026 — Soir — 2 pax — ✕</div>
+      </div>
+      <div class="mq-actions" style="margin-top:12px;">
+        <span class="mq-act" style="background:#2d2d35;">✎ Modifier</span>
+        <span class="mq-act" style="background:#1f1f1f;border:1px solid #7F1D1D;color:#EF4444;">Supprimer</span>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="mq-caption">Figure 2 — Gestion des clients : liste avec recherche et compteur de
+réservations, fiche détaillée éditable, historique, actions CRUD.</p>
+
+<div class="pagebreak"></div>
+
+<h1>3. Boîte de dialogue — Nouvelle réservation</h1>
+
+<div class="mq" style="max-width:420px;">
+  <div class="mq-header"><span class="mq-h">Nouvelle réservation</span></div>
+  <div style="padding:16px;">
+    <div class="mq-label">Date &amp; créneau</div>
+    <div class="mq-card"><div><span class="k">Date :</span> 27/06/2026</div><div><span class="k">Créneau :</span> 19:30 (Soir)</div></div>
+    <div class="mq-label">Couverts</div>
+    <div class="mq-card"><div>2 personnes</div></div>
+    <div class="mq-label">Client</div>
+    <div class="mq-card">
+      <div><span class="k">Civilité :</span> Madame</div>
+      <div><span class="k">Prénom :</span> _____________</div>
+      <div><span class="k">Nom :</span> _____________</div>
+      <div><span class="k">Téléphone :</span> _____________</div>
+      <div><span class="k">Email :</span> _____________</div>
+    </div>
+    <div class="mq-actions" style="margin-top:14px;">
+      <span class="mq-act" style="background:#2a2a2e;">Annuler</span>
+      <span class="mq-act green">✓ Créer</span>
+    </div>
+  </div>
+</div>
+<p class="mq-caption">Figure 3 — Dialogue modal de création : la réservation crée
+automatiquement la fiche client si elle n'existe pas (règle RG7).</p>
+
+<h1>4. Charte graphique</h1>
+
+<table>
+<thead><tr><th>Élément</th><th>Couleur</th><th>Code</th></tr></thead>
+<tbody>
+<tr><td>Accent / marque</td><td>Or Savora</td><td><code>#C9963A</code></td></tr>
+<tr><td>Fond principal</td><td>Anthracite</td><td><code>#0F0F12</code> / <code>#18181B</code></td></tr>
+<tr><td>Confirmée</td><td>Vert</td><td><code>#10B981</code></td></tr>
+<tr><td>En attente</td><td>Ambre</td><td><code>#F59E0B</code></td></tr>
+<tr><td>Refusée</td><td>Rouge</td><td><code>#EF4444</code></td></tr>
+<tr><td>Annulée</td><td>Gris</td><td><code>#6B7280</code></td></tr>
+</tbody>
+</table>
+
+<p style="margin-top:2em"><em>Maquette de l'application — BTS SIO SLAM, session 2026.</em></p>

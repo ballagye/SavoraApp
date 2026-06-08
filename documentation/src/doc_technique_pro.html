@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<style>
+@page {
+  size: A4; margin: 24mm 16mm 18mm;
+  @top-left     { content: "Savora — Système de réservation 2026"; font-size: 8pt; color: #94a3b8; }
+  @top-right    { content: "Documentation Technique"; font-size: 8pt; color: #94a3b8; }
+  @bottom-left  { content: "Restaurant Savora — BTS SIO Épreuve E6"; font-size: 8pt; color: #94a3b8; }
+  @bottom-right { content: "Page " counter(page); font-size: 8pt; color: #94a3b8; }
+}
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; color: #1e293b;
+       font-size: 10.5pt; line-height: 1.55; margin: 0; }
+h1 { color: #0f2742; font-size: 17pt; margin: 0 0 14px; padding-bottom: 6px;
+     border-bottom: 2px solid #0f2742; page-break-after: avoid; }
+h2 { color: #1d4e7a; font-size: 12.5pt; margin: 18px 0 8px; page-break-after: avoid; }
+h3 { color: #334155; font-size: 11pt; margin: 14px 0 6px; page-break-after: avoid; }
+p { margin: 7px 0; }
+code { background: #eef2f7; padding: 1px 4px; border-radius: 3px;
+       font-family: 'Consolas', monospace; font-size: 8.5pt; color: #b4530a; }
+pre { background: #0f172a; color: #e2e8f0; padding: 11px 14px; border-radius: 6px;
+      font-family: 'Consolas', monospace; font-size: 8.5pt; line-height: 1.45;
+      white-space: pre-wrap; page-break-inside: avoid; }
+pre code { background: none; color: inherit; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 9.5pt;
+        page-break-inside: avoid; }
+th { background: #0f2742; color: #fff; text-align: left; padding: 6px 9px; font-weight: 600; }
+td { border: 1px solid #cbd5e1; padding: 5px 9px; vertical-align: top; }
+tr:nth-child(even) td { background: #f1f5f9; }
+.note { border-left: 3px solid #1d4e7a; background: #eff6fb; padding: 8px 13px;
+        margin: 10px 0; font-size: 9.8pt; }
+.step { background:#fbf7ee; border:1px solid #e8d9b8; border-radius:6px; padding:8px 12px;
+        margin:8px 0; }
+.step b { color:#8a6a28; }
+ul { margin: 6px 0; padding-left: 22px; } li { margin: 3px 0; }
+
+.title-page { height: 245mm; display: flex; flex-direction: column; justify-content: center; }
+.title-page .big { font-size: 30pt; color: #0f2742; font-weight: 700;
+                   border-bottom: 3px solid #C9963A; padding-bottom: 10px; margin-bottom: 6px; }
+.title-page .sub { font-size: 13pt; color: #475569; margin-bottom: 36px; }
+.title-page .meta { font-size: 11pt; line-height: 2.1; }
+.title-page .meta b { display: inline-block; width: 130px; color: #0f2742; }
+.section { page-break-before: always; }
+
+.arch { margin: 14px 0; }
+.box { border: 2px solid #1d4e7a; border-radius: 8px; padding: 10px 14px; text-align: center;
+       background: #f8fafc; }
+.box .t { font-weight: 700; color: #0f2742; font-size: 10pt; }
+.box .s { font-size: 8.5pt; color: #64748b; }
+.box.api { border-color: #C9963A; background: #fbf7ee; }
+.box.db  { border-color: #0f2742; background: #eef2f7; max-width: 70%; margin: 0 auto; }
+.arrow { text-align: center; color: #1d4e7a; font-size: 13pt; margin: 4px 0; }
+</style></head>
+<body>
+
+<!-- ───────── PAGE DE TITRE ───────── -->
+<div class="title-page">
+  <div class="big">Documentation Technique</div>
+  <div class="sub">Architecture, base de données et guide de démonstration</div>
+  <div class="meta">
+    <div><b>Projet :</b> Système de réservation Savora</div>
+    <div><b>Épreuve :</b> BTS SIO – E6 (option SLAM)</div>
+    <div><b>Version :</b> 1.0</div>
+    <div><b>Date :</b> Mars 2026</div>
+    <div><b>Organisation :</b> Restaurant gastronomique Savora</div>
+    <div><b>Candidat :</b> Balla Gueye — N° 02149092520</div>
+  </div>
+</div>
+
+<!-- ───────── 1. PRÉSENTATION ───────── -->
+<div class="section">
+<h1>1. Présentation du projet</h1>
+
+<p>Savora est un système de réservation pour restaurant composé de <strong>trois
+parties</strong> qui partagent une <strong>même base de données PostgreSQL</strong> :</p>
+
+<table>
+<thead><tr><th>Partie</th><th>À quoi ça sert</th><th>Qui l'utilise</th></tr></thead>
+<tbody>
+<tr><td><strong>Site web</strong> (client léger)<br><span style="color:#64748b">SvelteKit + Drizzle</span></td><td>Présenter le restaurant et réserver une table en ligne</td><td>Le client</td></tr>
+<tr><td><strong>API REST</strong><br><span style="color:#64748b">FastAPI + SQLAlchemy</span></td><td>Point d'entrée du client lourd vers la base</td><td>(interne)</td></tr>
+<tr><td><strong>Application bureau</strong> (client lourd)<br><span style="color:#64748b">Python + CustomTkinter</span></td><td>Gérer les réservations, les clients et les places</td><td>Le personnel</td></tr>
+</tbody>
+</table>
+
+<h2>1.1 Schéma de l'architecture</h2>
+<p>Le <strong>site web</strong> écrit directement dans la base avec <strong>Drizzle</strong>.
+L'<strong>application bureau</strong> passe par l'<strong>API</strong>. Les deux utilisent
+la <strong>même base</strong> : une réservation faite sur le site apparaît aussitôt côté
+personnel.</p>
+
+<div class="arch">
+  <div style="display:flex; gap:14px; align-items:stretch;">
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div class="box"><div class="t">SITE WEB (client)</div>
+        <div class="s">SvelteKit + Drizzle</div></div>
+      <div class="arrow">▼ Drizzle</div>
+      <div style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center;
+                  color:#64748b; font-size:8.5pt; font-style:italic; border:1px dashed #cbd5e1;
+                  border-radius:8px; padding:6px;">écrit directement<br>dans la base</div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div class="box"><div class="t">APPLICATION BUREAU (personnel)</div>
+        <div class="s">Python + CustomTkinter</div></div>
+      <div class="arrow">▼ HTTP / JSON</div>
+      <div class="box api"><div class="t">API REST — FastAPI</div>
+        <div class="s">SQLAlchemy</div></div>
+    </div>
+  </div>
+  <div class="arrow">▼ &nbsp; même base pour les deux &nbsp; ▼</div>
+  <div class="box db"><div class="t">PostgreSQL — base « savora »</div>
+    <div class="s">reservations · clients · daily_quotas</div></div>
+</div>
+
+<h2>1.2 Technologies utilisées</h2>
+<table>
+<thead><tr><th>Outil</th><th>Rôle</th></tr></thead>
+<tbody>
+<tr><td>PostgreSQL</td><td>Base de données (stocke tout)</td></tr>
+<tr><td>SvelteKit</td><td>Site web (vitrine + réservation)</td></tr>
+<tr><td>Drizzle ORM</td><td>Accès à la base depuis le site web (en TypeScript)</td></tr>
+<tr><td>FastAPI</td><td>API REST utilisée par l'application bureau</td></tr>
+<tr><td>CustomTkinter</td><td>Application bureau du personnel (Python)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ───────── 2. MISE EN ROUTE / DÉMO ───────── -->
+<div class="section">
+<h1>2. Mise en route et démonstration</h1>
+<p>Cette partie explique <strong>comment lancer le projet</strong> et <strong>comment faire
+une démonstration</strong> complète.</p>
+
+<h2>2.1 Lancer le projet</h2>
+<p>On ouvre <strong>plusieurs terminaux</strong>, dans cet ordre :</p>
+
+<div class="step"><b>① Base de données (PostgreSQL)</b>
+<pre>sudo service postgresql start      → base « savora » sur le port 5432</pre></div>
+
+<div class="step"><b>② API REST (pour l'application bureau)</b>
+<pre>cd savora_api
+uvicorn main:app --reload          → http://localhost:8000/docs</pre></div>
+
+<div class="step"><b>③ Site web</b>
+<pre>cd "Client Leger"
+npm run dev                        → http://localhost:5173</pre></div>
+
+<div class="step"><b>④ Application bureau (personnel)</b>
+<pre>cd savora_desktop
+python main.py</pre></div>
+
+<h2>2.2 Visualiser la base — Drizzle Studio</h2>
+<p>Drizzle fournit une interface web pour <strong>voir et modifier la base</strong> très
+simplement. On la lance dans un terminal dédié :</p>
+<pre>cd "Client Leger"
+npm run db:studio                  → https://local.drizzle.studio</pre>
+<p>Dans le navigateur, on voit les <strong>trois tables</strong> du projet
+(<code>reservations</code>, <code>clients</code>, <code>daily_quotas</code>). On peut
+cliquer sur une table pour afficher son contenu, ses colonnes et ses liens.</p>
+<div class="note"><strong>À montrer au jury :</strong> Drizzle Studio est la façon la plus
+simple de prouver que les données sont bien enregistrées en base après une action.</div>
+
+<h2>2.3 Scénario de démonstration (3 étapes)</h2>
+<table>
+<thead><tr><th>Étape</th><th>Action</th><th>Résultat visible</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Sur le <strong>site web</strong>, faire une réservation</td><td>Message « demande enregistrée »</td></tr>
+<tr><td>2</td><td>Ouvrir <strong>Drizzle Studio</strong> et rafraîchir</td><td>La réservation et la fiche client apparaissent en base</td></tr>
+<tr><td>3</td><td>Dans l'<strong>application bureau</strong>, cliquer ↻ puis « Confirmer »</td><td>La réservation passe au statut « confirmée »</td></tr>
+</tbody>
+</table>
+<p>Cette démonstration prouve la <strong>cohérence</strong> : le site et l'application
+bureau travaillent sur la même base.</p>
+</div>
+
+<!-- ───────── 3. RÉPONDRE AUX BESOINS ───────── -->
+<div class="section">
+<h1>3. Où réaliser chaque besoin</h1>
+<p>Ce tableau indique, pour chaque besoin, <strong>où aller dans le projet</strong> pour le
+réaliser. Il sert de repère pendant la présentation.</p>
+
+<table>
+<thead><tr><th>Besoin</th><th>Où le faire</th><th>Comment</th></tr></thead>
+<tbody>
+<tr><td>Réserver une table en ligne</td><td>Site web</td><td>Formulaire : couverts, date, horaire, coordonnées</td></tr>
+<tr><td>Voir les places disponibles</td><td>Site web</td><td>Les créneaux complets sont grisés automatiquement</td></tr>
+<tr><td>Consulter les réservations</td><td>Application bureau</td><td>Planning du jour, navigation par date</td></tr>
+<tr><td>Filtrer (midi/soir, statut)</td><td>Application bureau</td><td>Boutons en haut + onglets de statut</td></tr>
+<tr><td>Valider une réservation</td><td>Application bureau</td><td>Bouton « ✓ Confirmer »</td></tr>
+<tr><td>Refuser une réservation</td><td>Application bureau</td><td>Bouton « ✕ Refuser »</td></tr>
+<tr><td>Modifier une réservation</td><td>Application bureau</td><td>Panneau de détail (couverts, note)</td></tr>
+<tr><td>Créer une réservation (téléphone)</td><td>Application bureau</td><td>Bouton « ＋ Nouvelle réservation »</td></tr>
+<tr><td>Gérer les clients (créer/modifier/supprimer)</td><td>Application bureau</td><td>Onglet « 👥 Clients »</td></tr>
+<tr><td>Voir l'historique d'un client</td><td>Application bureau</td><td>Cliquer un client → fiche détaillée</td></tr>
+<tr><td>Limiter le nombre de couverts</td><td>Application bureau</td><td>Barre « Quota » en bas</td></tr>
+<tr><td>Vérifier les données en base</td><td>Drizzle Studio</td><td><code>npm run db:studio</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ───────── 4. BASE DE DONNÉES ───────── -->
+<div class="section">
+<h1>4. La base de données</h1>
+<p><strong>Base :</strong> savora &nbsp;|&nbsp; <strong>Moteur :</strong> PostgreSQL
+&nbsp;|&nbsp; <strong>3 tables.</strong> On peut afficher ces tables en direct avec
+<strong>Drizzle Studio</strong> (voir &sect; 2.2).</p>
+
+<h2>4.1 Table « reservations »</h2>
+<p>Une ligne = une réservation (créée par le site ou saisie par le personnel).</p>
+<table>
+<thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>id</td><td>entier</td><td>Identifiant unique</td></tr>
+<tr><td>party_size</td><td>entier (1–6)</td><td>Nombre de couverts</td></tr>
+<tr><td>date</td><td>date</td><td>Jour de la réservation</td></tr>
+<tr><td>time_slot</td><td>texte</td><td>Heure (ex : 19:30)</td></tr>
+<tr><td>meal_period</td><td>énum</td><td>midi (lunch) ou soir (dinner)</td></tr>
+<tr><td>civility / first_name / last_name</td><td>texte</td><td>Identité du client</td></tr>
+<tr><td>phone / email</td><td>texte</td><td>Coordonnées (l'e-mail relie au client)</td></tr>
+<tr><td>status</td><td>énum</td><td>en attente / confirmée / refusée / annulée</td></tr>
+<tr><td>staff_note</td><td>texte</td><td>Note interne du personnel</td></tr>
+</tbody>
+</table>
+
+<h2>4.2 Table « clients »</h2>
+<p>Une ligne = un client. Créée automatiquement à la première réservation (clé : l'e-mail).</p>
+<table>
+<thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>id</td><td>entier</td><td>Identifiant unique</td></tr>
+<tr><td>civility / first_name / last_name</td><td>texte</td><td>Identité</td></tr>
+<tr><td>phone</td><td>texte</td><td>Téléphone</td></tr>
+<tr><td>email</td><td>texte (unique)</td><td>Identifie le client de façon unique</td></tr>
+<tr><td>notes</td><td>texte</td><td>Notes internes</td></tr>
+</tbody>
+</table>
+
+<h2>4.3 Table « daily_quotas »</h2>
+<p>Une ligne = la capacité maximale d'un service (midi ou soir) pour un jour donné.</p>
+<table>
+<thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>id</td><td>entier</td><td>Identifiant unique</td></tr>
+<tr><td>date</td><td>date</td><td>Jour concerné</td></tr>
+<tr><td>meal_period</td><td>énum</td><td>midi ou soir</td></tr>
+<tr><td>max_covers</td><td>entier</td><td>Nombre de couverts maximum (15 par défaut)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ───────── 5. COMMENT ÇA MARCHE ───────── -->
+<div class="section">
+<h1>5. Comment ça marche (l'essentiel)</h1>
+
+<h2>5.1 Le site web et Drizzle</h2>
+<p>Quand un client réserve, le site enregistre la réservation <strong>directement dans
+PostgreSQL avec Drizzle</strong>. Exemple simplifié de l'insertion :</p>
+<pre>// le site insère la réservation dans la base
+await db.insert(reservations).values({
+  partySize, date, timeSlot, mealPeriod, ... , status: 'pending'
+});</pre>
+<p>Le site calcule aussi les <strong>places restantes</strong> (avec Drizzle) pour griser
+les créneaux complets. <em>Aucun e-mail n'est envoyé</em> : la réservation reste « en
+attente » jusqu'à validation par le personnel.</p>
+
+<h2>5.2 L'application bureau (MVC)</h2>
+<p>L'application du personnel est organisée en <strong>MVC</strong> (3 rôles séparés) :</p>
+<table>
+<thead><tr><th>Rôle</th><th>Fait quoi</th><th>Fichier</th></tr></thead>
+<tbody>
+<tr><td>Contrôleur</td><td>Coordonne l'écran et les actions</td><td>main.py</td></tr>
+<tr><td>Vues</td><td>Les écrans (planning, détail, clients, quota)</td><td>components/</td></tr>
+<tr><td>Modèle</td><td>Parle à l'API REST</td><td>api_client.py</td></tr>
+</tbody>
+</table>
+<p>Toutes les actions (valider, refuser, modifier…) passent par l'API, qui applique les
+règles et enregistre dans la base.</p>
+
+<h2>5.3 La règle des places (quota)</h2>
+<p>Avant d'enregistrer une réservation, on vérifie qu'il <strong>reste de la place</strong>.
+Si le service est complet, la réservation est refusée.</p>
+<pre>if (couverts_réservés + nouveaux_couverts &gt; maximum) {
+    refuser ;   // service complet
+}</pre>
+
+<div class="note"><strong>Phrase simple à retenir :</strong> « Le site écrit dans la base
+avec Drizzle, l'application bureau passe par l'API, et les deux partagent la même base
+PostgreSQL. »</div>
+</div>
+
+<!-- ───────── 6. SÉCURITÉ ───────── -->
+<div class="section">
+<h1>6. Sécurité (l'essentiel)</h1>
+<table>
+<thead><tr><th>Risque</th><th>Protection mise en place</th></tr></thead>
+<tbody>
+<tr><td>Injection SQL</td><td>On n'écrit jamais le SQL « à la main » : Drizzle et SQLAlchemy génèrent des requêtes sûres</td></tr>
+<tr><td>Trop de réservations</td><td>Vérification du quota : refus si le service est complet</td></tr>
+<tr><td>Données invalides</td><td>Contrôles avant enregistrement (couverts 1–6, date non passée, e-mail valide)</td></tr>
+<tr><td>Accès à la base</td><td>Le navigateur n'accède jamais à la base ; seul le serveur le fait</td></tr>
+<tr><td>Mots de passe / accès</td><td>Rangés dans un fichier <code>.env</code> (hors du dépôt Git)</td></tr>
+<tr><td>Doublon client</td><td>L'e-mail est unique : pas deux fiches pour la même personne</td></tr>
+</tbody>
+</table>
+
+<div class="note" style="margin-top:18px;"><strong>Si le jury demande « montrez-moi… » :</strong>
+se référer au tableau du &sect; 3 (« Où réaliser chaque besoin ») pour aller directement au
+bon endroit.</div>
+</div>
+
+</body></html>

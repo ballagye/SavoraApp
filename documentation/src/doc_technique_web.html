@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<style>
+@page {
+  size: A4; margin: 24mm 16mm 18mm;
+  @top-left     { content: "Savora — Site web (SavoraWeb) 2026"; font-size: 8pt; color: #94a3b8; }
+  @top-right    { content: "Documentation Technique"; font-size: 8pt; color: #94a3b8; }
+  @bottom-left  { content: "Restaurant Savora — BTS SIO Épreuve E6"; font-size: 8pt; color: #94a3b8; }
+  @bottom-right { content: "Page " counter(page); font-size: 8pt; color: #94a3b8; }
+}
+* { box-sizing: border-box; }
+body { font-family: 'Segoe UI', Calibri, Arial, sans-serif; color: #1e293b;
+       font-size: 10.5pt; line-height: 1.55; margin: 0; }
+h1 { color: #0f2742; font-size: 17pt; margin: 0 0 14px; padding-bottom: 6px;
+     border-bottom: 2px solid #0f2742; page-break-after: avoid; }
+h2 { color: #1d4e7a; font-size: 12.5pt; margin: 18px 0 8px; page-break-after: avoid; }
+p { margin: 7px 0; }
+code { background: #eef2f7; padding: 1px 4px; border-radius: 3px;
+       font-family: 'Consolas', monospace; font-size: 8.5pt; color: #b4530a; }
+pre { background: #0f172a; color: #e2e8f0; padding: 11px 14px; border-radius: 6px;
+      font-family: 'Consolas', monospace; font-size: 8.5pt; line-height: 1.45;
+      white-space: pre-wrap; page-break-inside: avoid; }
+pre code { background: none; color: inherit; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 9.5pt;
+        page-break-inside: avoid; }
+th { background: #0f2742; color: #fff; text-align: left; padding: 6px 9px; font-weight: 600; }
+td { border: 1px solid #cbd5e1; padding: 5px 9px; vertical-align: top; }
+tr:nth-child(even) td { background: #f1f5f9; }
+.note { border-left: 3px solid #1d4e7a; background: #eff6fb; padding: 8px 13px;
+        margin: 10px 0; font-size: 9.8pt; }
+.step { background:#fbf7ee; border:1px solid #e8d9b8; border-radius:6px; padding:8px 12px;
+        margin:8px 0; }
+.step b { color:#8a6a28; }
+ul { margin: 6px 0; padding-left: 22px; } li { margin: 3px 0; }
+
+.title-page { height: 245mm; display: flex; flex-direction: column; justify-content: center; }
+.title-page .big { font-size: 28pt; color: #0f2742; font-weight: 700;
+                   border-bottom: 3px solid #C9963A; padding-bottom: 10px; margin-bottom: 6px; }
+.title-page .sub { font-size: 13pt; color: #475569; margin-bottom: 36px; }
+.title-page .meta { font-size: 11pt; line-height: 2.1; }
+.title-page .meta b { display: inline-block; width: 130px; color: #0f2742; }
+.section { page-break-before: always; }
+
+.arch { margin: 14px 0; }
+.box { border: 2px solid #1d4e7a; border-radius: 8px; padding: 10px 14px; text-align: center;
+       background: #f8fafc; }
+.box .t { font-weight: 700; color: #0f2742; font-size: 10pt; }
+.box .s { font-size: 8.5pt; color: #64748b; }
+.box.db  { border-color: #0f2742; background: #eef2f7; max-width: 70%; margin: 0 auto; }
+.box.dz  { border-color: #C9963A; background: #fbf7ee; }
+.arrow { text-align: center; color: #1d4e7a; font-size: 13pt; margin: 4px 0; }
+</style></head>
+<body>
+
+<!-- ───────── PAGE DE TITRE ───────── -->
+<div class="title-page">
+  <div class="big">Documentation Technique</div>
+  <div class="sub">Site web Savora — vitrine et réservation en ligne (SavoraWeb)</div>
+  <div class="meta">
+    <div><b>Projet :</b> Site web du restaurant Savora</div>
+    <div><b>Épreuve :</b> BTS SIO – E6 (option SLAM)</div>
+    <div><b>Version :</b> 1.0</div>
+    <div><b>Date :</b> Mars 2026</div>
+    <div><b>Organisation :</b> Restaurant gastronomique Savora</div>
+    <div><b>Candidat :</b> Balla Gueye — N° 02149092520</div>
+  </div>
+</div>
+
+<!-- ───────── 1. PRÉSENTATION ───────── -->
+<div class="section">
+<h1>1. Présentation du site</h1>
+<p>Le site web Savora est un <strong>site vitrine</strong> doublé d'un
+<strong>module de réservation en ligne</strong>. Il a deux rôles :</p>
+<table>
+<thead><tr><th>Rôle</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><strong>Vitrine</strong></td><td>Présenter le restaurant : concept, philosophie, horaires, localisation</td></tr>
+<tr><td><strong>Réservation</strong></td><td>Permettre au client de réserver une table en vérifiant les disponibilités en temps réel</td></tr>
+</tbody>
+</table>
+
+<h2>1.1 Technologies utilisées</h2>
+<table>
+<thead><tr><th>Outil</th><th>Rôle</th></tr></thead>
+<tbody>
+<tr><td>SvelteKit</td><td>Framework du site (pages côté navigateur + routes côté serveur)</td></tr>
+<tr><td>Svelte 5</td><td>Affichage réactif (runes : <code>$state</code>, <code>$effect</code>)</td></tr>
+<tr><td>Drizzle ORM</td><td>Accès à la base PostgreSQL (en TypeScript, typé et sécurisé)</td></tr>
+<tr><td>PostgreSQL</td><td>Base de données (réservations, clients, quotas)</td></tr>
+<tr><td>TypeScript</td><td>Langage typé (évite les erreurs)</td></tr>
+</tbody>
+</table>
+
+<h2>1.2 Schéma de l'architecture</h2>
+<p>SvelteKit est un framework <strong>full-stack</strong> : il sert les pages au navigateur
+et exécute aussi du <strong>code serveur</strong>. Le navigateur n'accède
+<strong>jamais</strong> directement à la base ; ce sont les <strong>routes serveur</strong>
+(<code>+server.ts</code>) qui interrogent PostgreSQL via <strong>Drizzle</strong>.</p>
+
+<div class="arch">
+  <div class="box"><div class="t">NAVIGATEUR (client)</div>
+    <div class="s">Pages SvelteKit · formulaire de réservation</div></div>
+  <div class="arrow">▼ &nbsp; appel interne <code>/api/…</code> &nbsp; ▼</div>
+  <div class="box"><div class="t">SVELTEKIT — routes serveur (+server.ts)</div>
+    <div class="s">Validation · règles de gestion</div></div>
+  <div class="arrow">▼ &nbsp; Drizzle ORM &nbsp; ▼</div>
+  <div class="box db"><div class="t">PostgreSQL — base « savora »</div>
+    <div class="s">reservations · clients · daily_quotas</div></div>
+</div>
+</div>
+
+<!-- ───────── 2. MISE EN ROUTE ───────── -->
+<div class="section">
+<h1>2. Mise en route</h1>
+
+<h2>2.1 Lancer le site</h2>
+<div class="step"><b>① Installer les dépendances</b>
+<pre>cd SavoraWeb
+npm install</pre></div>
+<div class="step"><b>② Configurer la connexion à la base</b> (fichier <code>.env</code>)
+<pre>DATABASE_URL="postgresql://utilisateur:motdepasse@localhost:5432/savora"</pre></div>
+<div class="step"><b>③ Démarrer le site</b>
+<pre>npm run dev                        → http://localhost:5173</pre></div>
+
+<h2>2.2 Visualiser la base — Drizzle Studio</h2>
+<p>Drizzle fournit une interface web pour <strong>voir et modifier la base</strong>. On la
+lance dans un terminal dédié :</p>
+<pre>npm run db:studio                  → https://local.drizzle.studio</pre>
+<p>On y voit les trois tables (<code>reservations</code>, <code>clients</code>,
+<code>daily_quotas</code>) et leur contenu.</p>
+<div class="note"><strong>À montrer au jury :</strong> faire une réservation sur le site,
+puis rafraîchir Drizzle Studio → la ligne apparaît. C'est la preuve que Drizzle enregistre
+bien en base.</div>
+</div>
+
+<!-- ───────── 3. STRUCTURE ───────── -->
+<div class="section">
+<h1>3. Structure du projet</h1>
+<table>
+<thead><tr><th>Fichier / dossier</th><th>Rôle</th></tr></thead>
+<tbody>
+<tr><td>src/routes/+page.svelte</td><td>Page d'accueil (assemble la vitrine et le module de réservation)</td></tr>
+<tr><td>src/lib/components/ <span style="color:#64748b">(Navbar, Presentation, Philosophy, Manifeste, DiningHours, Footer)</span></td><td>Les sections de la vitrine</td></tr>
+<tr><td>src/lib/components/Reservation.svelte</td><td>Le module de réservation (formulaire + disponibilités)</td></tr>
+<tr><td>src/routes/api/reservations/+server.ts</td><td>Route serveur : enregistre une réservation (via Drizzle)</td></tr>
+<tr><td>src/routes/api/availability/[date]/+server.ts</td><td>Route serveur : calcule les places restantes (via Drizzle)</td></tr>
+<tr><td>src/lib/server/db/schema.ts</td><td>Description des tables (schéma Drizzle)</td></tr>
+<tr><td>src/lib/server/db/queries.ts</td><td>Fonctions d'accès à la base (Drizzle)</td></tr>
+<tr><td>src/lib/server/db/index.ts</td><td>Connexion à PostgreSQL</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ───────── 4. VITRINE ───────── -->
+<div class="section">
+<h1>4. La vitrine</h1>
+<p>La vitrine présente le restaurant. Elle est découpée en composants réutilisables,
+assemblés dans la page d'accueil :</p>
+<table>
+<thead><tr><th>Composant</th><th>Contenu</th></tr></thead>
+<tbody>
+<tr><td>Navbar</td><td>Barre de navigation en haut</td></tr>
+<tr><td>Presentation</td><td>Présentation et image du restaurant</td></tr>
+<tr><td>Philosophy</td><td>La philosophie / le concept</td></tr>
+<tr><td>Manifeste</td><td>Le texte de présentation (manifeste)</td></tr>
+<tr><td>DiningHours</td><td>Les horaires d'ouverture</td></tr>
+<tr><td>Reservation</td><td>Le module de réservation (voir &sect; 5)</td></tr>
+<tr><td>Footer</td><td>Bas de page (localisation, contact)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ───────── 5. RÉSERVATION ───────── -->
+<div class="section">
+<h1>5. Le module de réservation</h1>
+<p>C'est le cœur du site. Le client choisit, dans cet ordre :</p>
+<ul>
+<li>le <strong>nombre de couverts</strong> (1 à 6) ;</li>
+<li>la <strong>date</strong> (calendrier) ;</li>
+<li>l'<strong>horaire</strong> (midi ou soir) ;</li>
+<li>puis remplit ses <strong>coordonnées</strong> et valide.</li>
+</ul>
+
+<h2>5.1 Disponibilités en temps réel</h2>
+<p>Quand le client change de date, le site demande les places restantes à la route
+<code>/api/availability/{date}</code>. Les créneaux <strong>complets sont grisés</strong>
+et ne peuvent pas être sélectionnés. Cet affichage se met à jour automatiquement grâce à
+la réactivité de Svelte 5.</p>
+
+<h2>5.2 Enregistrement de la réservation</h2>
+<p>À la validation, le site envoie la demande à <code>/api/reservations</code>. Cette route
+serveur vérifie les règles (couverts 1–6, date non passée, conditions acceptées, quota non
+dépassé), puis enregistre la réservation <strong>via Drizzle</strong>.</p>
+<div class="note"><strong>Important :</strong> aucun e-mail n'est envoyé. La réservation est
+enregistrée avec le statut <strong>« en attente »</strong> et un récapitulatif s'affiche à
+l'écran. C'est le personnel qui la validera ensuite (dans l'application de gestion).</div>
+</div>
+
+<!-- ───────── 6. ACCÈS DONNÉES DRIZZLE ───────── -->
+<div class="section">
+<h1>6. Accès aux données avec Drizzle</h1>
+<p>Drizzle permet d'écrire des requêtes SQL <strong>en TypeScript</strong>, de façon
+<strong>typée</strong> (le code vérifie les noms de colonnes) et <strong>sécurisée</strong>
+(protection automatique contre les injections SQL).</p>
+
+<h2>6.1 Calcul des places restantes (lecture)</h2>
+<pre>// queries.ts — additionne les couverts déjà réservés pour un service
+export async function reservedCovers(date, period) {
+  const [row] = await db
+    .select({ total: sql`coalesce(sum(${reservations.partySize}), 0)` })
+    .from(reservations)
+    .where(and(
+      eq(reservations.date, date),
+      eq(reservations.mealPeriod, period),
+      inArray(reservations.status, ['pending', 'confirmed'])
+    ));
+  return Number(row?.total ?? 0);
+}</pre>
+
+<h2>6.2 Enregistrement d'une réservation (écriture)</h2>
+<pre>// +server.ts — insère la réservation, puis crée le client si besoin
+const [created] = await db.insert(reservations)
+  .values({ partySize, date, timeSlot, mealPeriod, ... , status: 'pending' })
+  .returning();
+
+if (!(await clientExists(email)))
+  await db.insert(clients).values({ civility, firstName, lastName, phone, email });</pre>
+<p>Ainsi, une réservation crée <strong>automatiquement</strong> la fiche client si elle
+n'existe pas encore (le lien se fait par l'adresse e-mail).</p>
+</div>
+
+<!-- ───────── 7. BASE DE DONNÉES ───────── -->
+<div class="section">
+<h1>7. La base de données</h1>
+<p><strong>Base :</strong> savora &nbsp;|&nbsp; <strong>Moteur :</strong> PostgreSQL
+&nbsp;|&nbsp; <strong>3 tables</strong> (affichables dans Drizzle Studio).</p>
+
+<h2>7.1 Table « reservations »</h2>
+<table>
+<thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>id</td><td>entier</td><td>Identifiant unique</td></tr>
+<tr><td>party_size</td><td>entier (1–6)</td><td>Nombre de couverts</td></tr>
+<tr><td>date / time_slot</td><td>date / texte</td><td>Jour et heure (ex : 19:30)</td></tr>
+<tr><td>meal_period</td><td>énum</td><td>midi (lunch) ou soir (dinner)</td></tr>
+<tr><td>civility / first_name / last_name</td><td>texte</td><td>Identité du client</td></tr>
+<tr><td>phone / email</td><td>texte</td><td>Coordonnées (l'e-mail relie au client)</td></tr>
+<tr><td>status</td><td>énum</td><td>en attente / confirmée / refusée / annulée</td></tr>
+</tbody>
+</table>
+
+<h2>7.2 Table « clients »</h2>
+<table>
+<thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>id</td><td>entier</td><td>Identifiant unique</td></tr>
+<tr><td>civility / first_name / last_name</td><td>texte</td><td>Identité</td></tr>
+<tr><td>phone</td><td>texte</td><td>Téléphone</td></tr>
+<tr><td>email</td><td>texte (unique)</td><td>Identifie le client de façon unique</td></tr>
+<tr><td>notes</td><td>texte</td><td>Notes internes</td></tr>
+</tbody>
+</table>
+
+<h2>7.3 Table « daily_quotas »</h2>
+<table>
+<thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>id</td><td>entier</td><td>Identifiant unique</td></tr>
+<tr><td>date / meal_period</td><td>date / énum</td><td>Jour et service (midi/soir)</td></tr>
+<tr><td>max_covers</td><td>entier</td><td>Nombre de couverts maximum (15 par défaut)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- ───────── 8. DÉPLOIEMENT ───────── -->
+<div class="section">
+<h1>8. Déploiement</h1>
+<p>Le site est déployé sur un <strong>serveur Debian</strong> (machine virtuelle), avec
+PostgreSQL installé <strong>nativement</strong> sur le serveur.</p>
+
+<div class="step"><b>① Base de données</b> — créer la base et un utilisateur dédié (non-root)
+<pre>sudo -u postgres psql
+CREATE USER savora_user WITH PASSWORD 'motdepasse';
+CREATE DATABASE savora OWNER savora_user;</pre></div>
+
+<div class="step"><b>② Construire et lancer le site</b>
+<pre>npm install
+npm run build
+node build                         → site sur le port 3000</pre></div>
+
+<div class="step"><b>③ Apache (reverse proxy)</b> — le serveur web public redirige vers le site
+<pre>ProxyPass        /  http://localhost:3000/
+ProxyPassReverse /  http://localhost:3000/</pre></div>
+
+<p>Le site est alors accessible depuis l'<strong>adresse IP du serveur</strong>.</p>
+
+<h2>8.1 Sécurité (l'essentiel)</h2>
+<table>
+<thead><tr><th>Risque</th><th>Protection</th></tr></thead>
+<tbody>
+<tr><td>Injection SQL</td><td>Drizzle génère des requêtes paramétrées (jamais de SQL « à la main »)</td></tr>
+<tr><td>Accès à la base</td><td>Seul le serveur accède à la base, jamais le navigateur</td></tr>
+<tr><td>Mots de passe</td><td>Rangés dans le fichier <code>.env</code> (hors du dépôt Git)</td></tr>
+<tr><td>Privilèges base</td><td>Utilisateur PostgreSQL dédié non-root</td></tr>
+<tr><td>Données invalides</td><td>Contrôles avant enregistrement (couverts, date, conditions)</td></tr>
+</tbody>
+</table>
+
+<div class="note" style="margin-top:16px;"><strong>Phrase simple à retenir :</strong>
+« Le site SvelteKit sert les pages et, côté serveur, écrit dans PostgreSQL avec Drizzle.
+Aucune donnée ne transite par le navigateur sans contrôle. »</div>
+</div>
+
+</body></html>

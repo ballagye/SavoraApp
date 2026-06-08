@@ -1,0 +1,168 @@
+<div class="cover">
+  <h1>Diagrammes UML</h1>
+  <h2>Système de réservation <strong>Savora</strong></h2>
+  <hr>
+  <p><strong>BTS SIO – option SLAM – Session 2026</strong><br>
+  Épreuve E6 — Conception et développement d'applications</p>
+  <p><strong>Candidat :</strong> Balla Gueye — <strong>N° :</strong> 02149092520<br>
+  <strong>Période :</strong> Janvier – Mars 2026 · <strong>Lieu :</strong> Paris</p>
+</div>
+
+<h1>1. Diagramme des cas d'utilisation (DCU)</h1>
+
+<p>Le système met en jeu <strong>deux acteurs</strong> : le <em>Client</em> (visiteur
+du site web) et le <em>Staff</em> (personnel du restaurant). Le Client effectue ses
+réservations en ligne ; le Staff les gère via l'outil interne.</p>
+
+<pre class="mermaid">
+flowchart LR
+  Client(("👤<br>Client"))
+  Staff(("👤<br>Staff"))
+
+  subgraph S["Système de réservation Savora"]
+    direction TB
+    UC1(["Effectuer une réservation"])
+    UC2(["Consulter le planning des tables"])
+    UC3(["Valider / refuser une réservation"])
+    UC4(["Modifier une réservation"])
+    UC5(["Gérer les clients (CRUD)"])
+    UC6(["Gérer les places disponibles"])
+  end
+
+  Client --> UC1
+  Staff --> UC2
+  Staff --> UC3
+  Staff --> UC4
+  Staff --> UC5
+  Staff --> UC6
+
+  classDef actor fill:#C9963A,stroke:#8a6a28,color:#1a1a1a,font-weight:bold;
+  classDef uc fill:#1f2937,stroke:#374151,color:#e5e7eb;
+  class Client,Staff actor;
+  class UC1,UC2,UC3,UC4,UC5,UC6 uc;
+</pre>
+
+<table>
+<thead><tr><th>Cas d'utilisation</th><th>Acteur</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>Effectuer une réservation</td><td>Client</td><td>Saisir une demande de réservation depuis le site web.</td></tr>
+<tr><td>Consulter le planning</td><td>Staff</td><td>Visualiser les réservations groupées par créneau.</td></tr>
+<tr><td>Valider / refuser</td><td>Staff</td><td>Changer le statut d'une réservation.</td></tr>
+<tr><td>Modifier une réservation</td><td>Staff</td><td>Ajuster couverts, note interne.</td></tr>
+<tr><td>Gérer les clients (CRUD)</td><td>Staff</td><td>Créer, lire, modifier, supprimer une fiche client.</td></tr>
+<tr><td>Gérer les places disponibles</td><td>Staff</td><td>Définir le quota de couverts par service.</td></tr>
+</tbody>
+</table>
+
+<div class="pagebreak"></div>
+
+<h1>2. Diagramme de classes — Client lourd (UML)</h1>
+
+<p>Les classes sont organisées selon les trois couches du modèle <strong>MVC</strong> :
+le <strong>Contrôleur</strong> (<code>SavoraApp</code>), les <strong>Vues</strong>
+(composants d'interface) et le <strong>Modèle</strong> (<code>api_client</code>,
+seul point d'accès aux données via l'API REST).</p>
+
+<pre class="mermaid">
+classDiagram
+  direction TB
+
+  class SavoraApp {
+    +date current_date
+    +str active_view
+    +str status_filter
+    +load()
+    +switch_view(view)
+    +prev_day()
+    +next_day()
+    +set_service(val)
+    +set_status(key)
+    +on_select(reservation)
+    +load_clients()
+  }
+
+  class ReservationList {
+    +list reservations
+    +load(data)
+    +set_date_filter(d)
+    +set_period_filter(p)
+    +set_status_filter(s)
+  }
+
+  class ReservationDetail {
+    +dict current
+    +load(reservation)
+    +change_status(s)
+    +save_covers()
+    +delete()
+  }
+
+  class QuotaPanel {
+    +load_quota()
+    +save()
+  }
+
+  class ClientsList {
+    +load(clients)
+  }
+
+  class ClientDetail {
+    +load(client)
+    +save()
+    +delete()
+  }
+
+  class NewReservationDialog {
+    +submit()
+  }
+
+  class NewClientDialog {
+    +submit()
+  }
+
+  class api_client {
+    +get_reservations()
+    +create_reservation()
+    +update_status()
+    +update_reservation()
+    +delete_reservation()
+    +get_clients()
+    +create_client()
+    +update_client()
+    +delete_client()
+    +get_quota()
+    +set_quota()
+  }
+
+  class APIError {
+    +str detail
+  }
+
+  SavoraApp o-- ReservationList
+  SavoraApp o-- ReservationDetail
+  SavoraApp o-- QuotaPanel
+  SavoraApp o-- ClientsList
+  SavoraApp o-- ClientDetail
+  SavoraApp ..> NewReservationDialog
+  SavoraApp ..> NewClientDialog
+
+  ReservationList ..> api_client
+  ReservationDetail ..> api_client
+  QuotaPanel ..> api_client
+  ClientsList ..> api_client
+  ClientDetail ..> api_client
+  NewReservationDialog ..> api_client
+  NewClientDialog ..> api_client
+  api_client ..> APIError
+</pre>
+
+<table>
+<thead><tr><th>Couche MVC</th><th>Classes</th><th>Responsabilité</th></tr></thead>
+<tbody>
+<tr><td><strong>Contrôleur</strong></td><td><code>SavoraApp</code></td><td>Orchestre les vues et le modèle, gère l'état applicatif et la navigation.</td></tr>
+<tr><td><strong>Vue</strong></td><td><code>ReservationList</code>, <code>ReservationDetail</code>, <code>QuotaPanel</code>, <code>ClientsList</code>, <code>ClientDetail</code>, <code>NewReservationDialog</code>, <code>NewClientDialog</code></td><td>Affichage et interactions utilisateur (CustomTkinter).</td></tr>
+<tr><td><strong>Modèle</strong></td><td><code>api_client</code>, <code>APIError</code></td><td>Accès aux données via l'API REST (HTTP/JSON), gestion des erreurs.</td></tr>
+</tbody>
+</table>
+
+<p style="margin-top:2em"><em>Diagrammes UML — BTS SIO SLAM, session 2026.</em></p>

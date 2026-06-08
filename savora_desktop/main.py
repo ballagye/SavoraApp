@@ -31,7 +31,8 @@ class SavoraApp(ctk.CTk):
         self.geometry("1440x860")
         self.minsize(1100, 680)
 
-        self._after_id = None
+        self._after_id    = None
+        self._debounce_id = None          # debounce navigation rapide
         self._current_date = date.today()
         self._showing_all   = False
         self._service_filter: Optional[str] = None
@@ -285,16 +286,25 @@ class SavoraApp(ctk.CTk):
 
     def _import_clients(self):
         """Crée les fiches clients pour tous les emails de réservations."""
-        try:
-            result = api_client.import_clients_from_reservations()
-            n = result.get("imported", 0)
-            self._count_lbl.configure(
-                text=f"{n} client{'s' if n != 1 else ''} importé{'s' if n != 1 else ''}",
-                text_color="#10B981")
-            self._load_clients()
-        except Exception as exc:
-            msg = exc.detail if isinstance(exc, APIError) else str(exc)
-            self._count_lbl.configure(text=f"Erreur : {msg}", text_color="#EF4444")
+        self._btn_import.configure(state="disabled", text="…")
+
+        def do():
+            try:
+                result = api_client.import_clients_from_reservations()
+                n = result.get("imported", 0)
+                self.after(0, lambda: self._count_lbl.configure(
+                    text=f"{n} client{'s' if n != 1 else ''} importé{'s' if n != 1 else ''}",
+                    text_color="#10B981"))
+                self.after(0, self._load_clients)
+            except Exception as exc:
+                msg = exc.detail if isinstance(exc, APIError) else str(exc)
+                self.after(0, lambda: self._count_lbl.configure(
+                    text=f"Erreur : {msg}", text_color="#EF4444"))
+            finally:
+                self.after(0, lambda: self._btn_import.configure(
+                    state="normal", text="⬇  Importer réservations"))
+
+        threading.Thread(target=do, daemon=True).start()
 
     def _new_reservation(self):
         """Ouvre le dialogue de création d'une réservation."""
@@ -350,7 +360,16 @@ class SavoraApp(ctk.CTk):
 
     # ── Chargement (thread) ───────────────────────────────────────────────────
 
-    def _load(self):
+    def _load(self, debounce_ms: int = 80):
+        """Lance un chargement après un court délai (debounce).
+        Les appels rapides successifs (navigation date, filtres) sont fusionnés
+        en un seul appel réseau, évitant les requêtes inutiles."""
+        if self._debounce_id is not None:
+            self.after_cancel(self._debounce_id)
+        self._debounce_id = self.after(debounce_ms, self._do_load)
+
+    def _do_load(self):
+        self._debounce_id = None
         if self._after_id is not None:
             self.after_cancel(self._after_id)
             self._after_id = None

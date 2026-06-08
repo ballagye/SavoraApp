@@ -1,4 +1,5 @@
 """Panneau droit : détail + actions d'une réservation."""
+import threading
 import tkinter as tk
 from tkinter import ttk, messagebox
 from typing import Callable, Dict, Optional
@@ -276,11 +277,20 @@ class ReservationDetail(ctk.CTkFrame):
     def _change_status(self, s: str):
         if not self._current:
             return
-        try:
-            api_client.update_status(self._current["id"], s, staff_note=self._note())
-            self._on_refresh()
-        except APIError as e:
-            messagebox.showerror("Erreur API", str(e))
+        rid  = self._current["id"]
+        note = self._note()
+        self._set_interactive("disabled")
+
+        def do():
+            try:
+                api_client.update_status(rid, s, staff_note=note)
+                self.after(0, self._on_refresh)
+            except APIError as e:
+                self.after(0, lambda: messagebox.showerror("Erreur API", str(e)))
+            finally:
+                self.after(0, lambda: self._set_interactive("normal"))
+
+        threading.Thread(target=do, daemon=True).start()
 
     def _delete(self):
         if not self._current:
@@ -292,13 +302,22 @@ class ReservationDetail(ctk.CTkFrame):
             f"{r['first_name']} {r['last_name']} ?\nAction irréversible."
         ):
             return
-        try:
-            api_client.delete_reservation(r["id"])
-            self._current = None
-            self._show_placeholder()
-            self._on_refresh()
-        except APIError as e:
-            messagebox.showerror("Erreur API", str(e))
+        self._set_interactive("disabled")
+
+        def do():
+            try:
+                api_client.delete_reservation(r["id"])
+                self.after(0, lambda: (
+                    setattr(self, '_current', None),
+                    self._show_placeholder(),
+                    self._on_refresh(),
+                ))
+            except APIError as e:
+                self.after(0, lambda: messagebox.showerror("Erreur API", str(e)))
+            finally:
+                self.after(0, lambda: self._set_interactive("normal"))
+
+        threading.Thread(target=do, daemon=True).start()
 
     def _save_covers(self):
         if not self._current:
@@ -308,8 +327,16 @@ class ReservationDetail(ctk.CTkFrame):
         except ValueError:
             messagebox.showwarning("Valeur invalide", "Entrez un nombre entier.")
             return
-        try:
-            api_client.update_reservation(self._current["id"], {"party_size": val})
-            self._on_refresh()
-        except APIError as e:
-            messagebox.showerror("Erreur API", str(e))
+        rid = self._current["id"]
+        self._set_interactive("disabled")
+
+        def do():
+            try:
+                api_client.update_reservation(rid, {"party_size": val})
+                self.after(0, self._on_refresh)
+            except APIError as e:
+                self.after(0, lambda: messagebox.showerror("Erreur API", str(e)))
+            finally:
+                self.after(0, lambda: self._set_interactive("normal"))
+
+        threading.Thread(target=do, daemon=True).start()
